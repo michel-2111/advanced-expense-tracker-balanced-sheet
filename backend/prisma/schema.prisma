@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Document {
+  id        Int      @id @default(autoincrement())
+  title     String
+  fileUrl   String
+  createdAt DateTime @default(now())
+  status    String
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  password String
+  role     String
+}
+
+model Transaction {
+  id         Int       @id @default(autoincrement())
+  type       String    // "income" atau "expense"
+  amount     Float
+  category   String
+  date       DateTime  @default(now())
+  notes      String?
+  impact     String    // "asset" | "liability" | "equity"
+
+  assetId      Int?
+  asset        Asset?      @relation("AssetToTransaction", fields: [assetId], references: [id])
+
+  liabilityId  Int?
+  liability    Liability?  @relation("LiabilityToTransaction", fields: [liabilityId], references: [id])
+
+  equityId     Int?
+  equity       Equity?     @relation("EquityToTransaction", fields: [equityId], references: [id])
+}
+
+model Asset {
+  id            Int           @id @default(autoincrement())
+  name          String
+  value         Float
+  notes         String?
+  createdAt     DateTime      @default(now())
+  transactions  Transaction[] @relation("AssetToTransaction")
+}
+
+model Liability {
+  id            Int           @id @default(autoincrement())
+  name          String
+  value         Float
+  notes         String?
+  createdAt     DateTime      @default(now())
+  transactions  Transaction[] @relation("LiabilityToTransaction")
+}
+
+model Equity {
+  id            Int           @id @default(autoincrement())
+  name          String
+  value         Float
+  notes         String?
+  createdAt     DateTime      @default(now())
+  transactions  Transaction[] @relation("EquityToTransaction")
+}
+
+model Adjustment {
+  id        Int      @id @default(autoincrement())
+  type      String   // 'asset' | 'liability' | 'equity'
+  value     Float
+  notes     String?
+  createdAt DateTime @default(now())
+  user      String?  // nama/email/username admin pembuat adjustment
+}
