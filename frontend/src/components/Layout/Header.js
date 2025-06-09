@@ -19,7 +19,7 @@ export default function Header({ onMenuClick, onLogout }) {
                     <MenuIcon />
                 </IconButton>
                 <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                    UMKM Finance
+                    e-UMKM
                 </Typography>
                 <Box sx={{ flexGrow: 0 }}>
                     <Typography variant="body2" sx={{ display: 'inline', mr: 2 }}>

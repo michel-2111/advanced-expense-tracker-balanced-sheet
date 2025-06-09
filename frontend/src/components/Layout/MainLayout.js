@@ -27,8 +27,8 @@ return (
             <Header onMenuClick={handleOpenSidebar} onLogout={handleLogout} role={role} />
             <Sidebar open={sidebarOpen} onClose={handleCloseSidebar} role={role} />
             <Toolbar />
+            <Breadcrumbs />
             <Box component="main" sx={{flexGrow: 1,p: { xs: 2, md: 2 },mt: 1,minHeight: '80vh', }}>
-                <Breadcrumbs />
                 {children}
             </Box>
             <Footer />

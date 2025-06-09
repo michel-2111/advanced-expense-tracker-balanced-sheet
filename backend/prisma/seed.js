@@ -29,7 +29,7 @@ async function main() {
 
     let saldo_awal = 5000000;
     let saldo = saldo_awal;
-    for (let month = 1; month <= 5; month++) {
+    for (let month = 1; month <= 9; month++) {
         const nTrans = randomInRange(30, 40);
         let monthIncome = 0, monthExpense = 0;
 
