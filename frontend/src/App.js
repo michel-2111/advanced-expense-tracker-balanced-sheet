@@ -1,4 +1,8 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
+import { AuthProvider } from './context/AuthContext';
+import { ToastContainer } from 'react-toastify';
+
 import Login from './pages/login'
 import UMKMFinance from './pages/UMKMFinance'
 import AdminArchive from './pages/AdminArchive'
@@ -7,26 +11,38 @@ import BalanceSheet from './pages/BalanceSheet';
 import UMKMDashboard from './pages/UMKMDashboard';
 import MasterData from './pages/MasterData';
 import Listpage from "./pages/TransactionListPage"
-import { ToastContainer } from 'react-toastify';
+import { BreadcrumbProvider } from './context/BreadcrumbContext';
+
 import 'react-toastify/dist/ReactToastify.css';
+import { useLocation } from 'react-router-dom';
 
-
-function App() {
+function RoutesWrapper() {
+  const location = useLocation();
   return (
-    <BrowserRouter>
-      <Routes>
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
         <Route path="/home" element={<UMKMDashboard />} />
         <Route path="/master-data" element={<MasterData />} /> 
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<UMKMFinance />} />
+        <Route path="/add" element={<UMKMFinance />} />
         <Route path="/admin" element={<AdminArchive />} />
         <Route path="/balance-sheet" element={<BalanceSheet />} />
         <Route path='/list' element={<Listpage />} />
       </Routes>
-      <ToastContainer position="top-right" autoClose={3000} />
-    </BrowserRouter>
-  )
+    </AnimatePresence>
+  );
 }
 
-export default App
+export default function App() {
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <BreadcrumbProvider>
+          <RoutesWrapper />
+          <ToastContainer position="top-right" autoClose={3000} />
+        </BreadcrumbProvider>
+      </BrowserRouter>
+    </AuthProvider>
+  );
+}

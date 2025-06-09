@@ -140,3 +140,79 @@ exports.getFilteredAndSorted = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+exports.importTransactions = async (req, res) => {
+    const { transactions } = req.body;
+    if (!transactions || !Array.isArray(transactions) || !transactions.length) {
+        return res.status(400).json({ error: 'No transaction data provided' });
+    }
+
+    try {
+        // 1. Ambil master data
+        const [assets, liabilities, equities] = await Promise.all([
+            prisma.asset.findMany(),
+            prisma.liability.findMany(),
+            prisma.equity.findMany()
+        ]);
+
+        // 2. Siapkan array data transaksi yang sudah dimapping id-nya
+        const mappedTransactions = transactions.map((trx) => {
+            let assetId = undefined;
+            let liabilityId = undefined;
+            let equityId = undefined;
+
+            // Gunakan posisiName dari import (case-insensitive match)
+            const posName = trx.positionName ? String(trx.positionName).trim().toLowerCase() : '';
+
+            if (trx.impact === 'asset') {
+                const found = assets.find(a => a.name.trim().toLowerCase() === posName);
+                if (found) assetId = found.id;
+            } else if (trx.impact === 'liability') {
+                const found = liabilities.find(l => l.name.trim().toLowerCase() === posName);
+                if (found) liabilityId = found.id;
+            } else if (trx.impact === 'equity') {
+                const found = equities.find(e => e.name.trim().toLowerCase() === posName);
+                if (found) equityId = found.id;
+            }
+
+            return {
+                type: trx.type,
+                amount: parseFloat(trx.amount),
+                category: trx.category,
+                notes: trx.notes,
+                date: new Date(trx.date),
+                impact: trx.impact,
+                assetId,
+                liabilityId,
+                equityId,
+            };
+        });
+
+        // 3. Validasi jika ada posisiName yang tidak ditemukan di master
+        const failed = mappedTransactions.filter((trx, idx) => {
+            // Hanya gagal jika impact ada, tapi id nya null/undefined
+            if (trx.impact === 'asset' && !trx.assetId) return true;
+            if (trx.impact === 'liability' && !trx.liabilityId) return true;
+            if (trx.impact === 'equity' && !trx.equityId) return true;
+            return false;
+        });
+
+        if (failed.length > 0) {
+            // Buat pesan error untuk semua data gagal
+            const errorRows = failed.map((trx, idx) => `${trx.impact}: ${transactions[idx].positionName || '-'}`).join(', ');
+            return res.status(400).json({ error: `Posisi berikut tidak ditemukan di master data: ${errorRows}` });
+        }
+
+        // 4. Masukkan data ke DB
+        await prisma.$transaction(
+            mappedTransactions.map((trx) =>
+                prisma.transaction.create({ data: trx })
+            )
+        );
+
+        res.json({ success: true, count: mappedTransactions.length });
+
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};

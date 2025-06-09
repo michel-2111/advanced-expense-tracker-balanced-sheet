@@ -13,8 +13,8 @@ export default function DocumentFilterControls({
     const [showSearch, setShowSearch] = useState(false);
 
     return (
-        <Box display="flex" gap={2} sx={{ my: 3, flexWrap: 'wrap' }}>
-        <FormControl sx={{ minWidth: 150 }} size="small">
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: { xs: 'wrap', md: 'nowrap' }, justifyContent: 'space-between', mb: 2 }}>
+        <FormControl sx={{ minWidth: 125 }} size="small">
             <InputLabel>Status</InputLabel>
             <Select
             value={filterStatus}
@@ -27,7 +27,7 @@ export default function DocumentFilterControls({
             </Select>
         </FormControl>
 
-        <FormControl sx={{ minWidth: 150 }} size="small">
+        <FormControl sx={{ minWidth: 125 }} size="small">
             <InputLabel>Sort based on</InputLabel>
             <Select
             value={sortField}
@@ -39,7 +39,7 @@ export default function DocumentFilterControls({
             </Select>
         </FormControl>
 
-        <FormControl sx={{ minWidth: 150 }} size="small">
+        <FormControl sx={{ minWidth: 125 }} size="small">
             <InputLabel>Urutan</InputLabel>
             <Select
             value={sortOrder}

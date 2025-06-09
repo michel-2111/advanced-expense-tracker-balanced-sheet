@@ -108,5 +108,6 @@ export default function useTransactionManager(itemsPerPage = 10) {
         handleEditSubmit, selectedTransaction,
         deleteDialogOpen, handleDeleteOpen, handleDeleteClose, handleDeleteConfirm,
         handleSubmit, handleFilter,
+        fetchTransactions,
     };
 }

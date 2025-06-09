@@ -3,8 +3,6 @@ import { TextField, Button, MenuItem, InputLabel, Select, FormControl, Typograph
 export default function DocumentUploadForm({ title, setTitle, file, setFile, status, setStatus, handleUpload }) {
     return (
         <>
-        <Typography variant="h6" gutterBottom>Document Archive</Typography>
-
         <TextField
             label="Judul Dokumen"
             fullWidth

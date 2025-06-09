@@ -1,18 +1,22 @@
 import React, { useEffect, useState } from 'react';
+import { Fab, Tooltip } from '@mui/material';
+import { Paper } from '@mui/material';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { useBreadcrumb } from '../context/BreadcrumbContext';
+
 import axios from 'axios';
 import BalanceSheetView from '../components/BalancedSheet/BalanceSheetView';
 import AdjustmentDialog from '../components/BalancedSheet/AdjustmentDialog';
 import AdjustmentHistory from '../components/BalancedSheet/AdjustmentHistory';
+import PageTransition from "../components/Layout/PageTransition";
 import MainLayout from '../components/Layout/MainLayout';
-import { Fab, Tooltip } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { Paper } from '@mui/material';
-import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
-
-
 
 export default function BalanceSheet() {
+    const { setBreadcrumbs } = useBreadcrumb();
+    const { role } = useAuth();
     const [assets, setAssets] = useState([]);
     const [liabilities, setLiabilities] = useState([]);
     const [equities, setEquities] = useState([]);
@@ -34,7 +38,14 @@ export default function BalanceSheet() {
         axios.get('http://localhost:5000/api/adjustments').then(res => setAdjustments(res.data));
         // ==== Fetch summary otomatis ====
         axios.get('http://localhost:5000/api/balance-summary').then(res => setSummary(res.data));
-    }, []);
+
+        setBreadcrumbs([
+            { label: role === 'admin' ? 'Admin' : 'UMKM', path: role === 'admin' ? '/admin' : '/home' },
+            { label: 'Home', path: role === 'admin' ? '/admin' : '/home' },
+            { label: 'Daftar Transaksi', path: '/list' },
+            { label: 'Neraca', path: '/balance-sheet' }
+        ]);
+            }, [setBreadcrumbs, role]);
 
     const handleSubmitAdjustment = (data) => {
         axios.post('http://localhost:5000/api/adjustments', data).then(() => {
@@ -46,8 +57,9 @@ export default function BalanceSheet() {
     };
 
     return (
+        <PageTransition>
         <MainLayout>
-            <Paper elevation={4} sx={{ p: 4, mb: 4, maxWidth: 1200, mx: 'auto' }}>
+            <Paper elevation={5} sx={{ p: 4, mb: 4, maxWidth: 1200, mx: 'auto', borderRadius: 4 }}>
                 <BalanceSheetView
                     assets={assets}
                     liabilities={liabilities}
@@ -77,5 +89,6 @@ export default function BalanceSheet() {
                 </Tooltip>
             </div>
         </MainLayout>
+        </PageTransition>
     );
 }
