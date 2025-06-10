@@ -36,7 +36,12 @@ const getWeekNumber = (d) => {
 };
 
 const grouped = groupData();
-const labels = Object.keys(grouped).sort();
+const labels = Object.keys(grouped).sort((a, b) => {
+    const [yearA, monthA] = a.split('-').map(Number);
+    const [yearB, monthB] = b.split('-').map(Number);
+    if (yearA !== yearB) return yearA - yearB;
+    return monthA - monthB;
+});
 const incomeData = labels.map((key) => grouped[key].income);
 const expenseData = labels.map((key) => grouped[key].expense);
 

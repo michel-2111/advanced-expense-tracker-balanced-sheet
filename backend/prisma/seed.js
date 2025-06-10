@@ -71,7 +71,7 @@ async function main() {
         }
 
         for (let i = 0; i < randomInRange(1, 2); i++) {
-            const amount = randomInRange(100000, 600000);
+            const amount = randomInRange(500000, 1000000);
             saldo += amount;
             await prisma.transaction.create({
                 data: {
