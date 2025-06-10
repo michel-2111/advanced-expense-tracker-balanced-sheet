@@ -8,6 +8,10 @@ const SECRET = process.env.JWT_SECRET;
 exports.register = async (req, res) => {
     const { email, password, role } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+        if (existingUser) {
+        return res.status(400).json({ error: 'Email sudah terdaftar!' });
+        }
 
     try {
     const user = await prisma.user.create({
@@ -23,7 +27,7 @@ exports.register = async (req, res) => {
 exports.getAllUsers = async (req, res) => {
     try {
     const users = await prisma.user.findMany({
-        select: { id: true, email: true, role: true }
+        select: { id: true, email: true, role: true, createdAt: true }
     });
     res.json(users);
     } catch (err) {
@@ -59,5 +63,29 @@ exports.login = async (req, res) => {
     res.json({ token, role: user.role });
     } catch (err) {
     res.status(500).json({ error: err.message });
+    }
+};
+
+exports.updateUser = async (req, res) => {
+    const { id } = req.params;
+    const { email, role } = req.body;
+    try {
+        const user = await prisma.user.update({
+        where: { id: Number(id) },
+        data: { email, role }
+        });
+        res.json(user);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+exports.deleteUser = async (req, res) => {
+    const { id } = req.params;
+    try {
+        await prisma.user.delete({ where: { id: Number(id) } });
+        res.json({ message: "User deleted" });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 };

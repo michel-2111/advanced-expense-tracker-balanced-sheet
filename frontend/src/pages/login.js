@@ -1,5 +1,4 @@
-// src/pages/Login.js
-import { useState } from 'react'
+import { useState, useRef  } from 'react'
 import axios from 'axios'
 import { Typography, TextField, Button, Box, Paper } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
@@ -12,6 +11,7 @@ import PageTransition from "../components/Layout/PageTransition";
 
 export default function Login() {
     const [form, setForm] = useState({ email: '', password: '' })
+    const passwordRef = useRef();
     const navigate = useNavigate()
     const { login } = useAuth()
     const [errorMsg, setErrorMsg] = useState('');
@@ -57,6 +57,7 @@ export default function Login() {
             margin="normal"
             value={form.email}
             onChange={e => setForm({ ...form, email: e.target.value })}
+            onKeyDown={e => { if (e.key === 'Enter' && passwordRef.current) passwordRef.current.focus()}}
             />
             <TextField
             label="Password"
@@ -65,6 +66,7 @@ export default function Login() {
             margin="normal"
             value={form.password}
             onChange={e => setForm({ ...form, password: e.target.value })}
+            onKeyDown={e => { if (e.key === 'Enter') handleLogin();}}
             />
             <Button fullWidth variant="contained" color="primary" onClick={handleLogin} sx={{ mt: 2, fontWeight: 700 }}>
             LOGIN

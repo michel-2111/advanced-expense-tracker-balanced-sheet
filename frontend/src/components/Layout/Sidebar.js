@@ -20,7 +20,7 @@ const menuAdmin = [
     { label: 'Arsip', icon: <ArchiveIcon />, path: '/admin' },
     { label: 'Master Data', icon: <FolderIcon />, path: '/master-data' },
     { label: 'Keuangan', icon: <AccountBalanceIcon />, path: '/list' },
-    { label: 'Kelola User', icon: <PeopleIcon />, path: '/admin/users' },
+    { label: 'Kelola User', icon: <PeopleIcon />, path: '/users' },
 ];
 
 export default function Sidebar({ open, onClose }) {

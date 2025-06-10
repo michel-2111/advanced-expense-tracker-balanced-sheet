@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Table, TableHead, TableRow, TableCell, TableBody, Button, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Box, IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteDialog from './DeleteDialog';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
@@ -16,6 +17,9 @@ export default function EquityMaster() {
             .then(res => setEquities(res.data))
             .catch(() => toast.error('Gagal memuat data ekuitas!'));
     };
+
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [selectedDeleteId, setSelectedDeleteId] = useState(null);
 
     useEffect(() => { fetchEquities(); }, []);
 
@@ -48,15 +52,22 @@ export default function EquityMaster() {
         setOpen(true);
     };
 
-    const handleDelete = (id) => {
-        if (window.confirm('Hapus akun ini?')) {
-            axios.delete(`http://localhost:5000/api/equities/${id}`)
-                .then(() => {
-                    toast.success('Ekuitas berhasil dihapus!');
-                    fetchEquities();
-                })
-                .catch(() => toast.error('Gagal menghapus ekuitas!'));
-        }
+    const handleDeleteClick = (id) => {
+        setSelectedDeleteId(id);
+        setDeleteDialogOpen(true);
+    };
+
+    const handleDeleteConfirm = () => {
+        axios.delete(`http://localhost:5000/api/equities/${selectedDeleteId}`)
+            .then(() => {
+                toast.success('Aset berhasil dihapus!');
+                fetchEquities();
+            })
+            .catch(() => toast.error('Gagal menghapus aset!'))
+            .finally(() => {
+                setDeleteDialogOpen(false);
+                setSelectedDeleteId(null);
+            });
     };
 
     return (
@@ -79,7 +90,7 @@ export default function EquityMaster() {
                             <TableCell>{eq.notes}</TableCell>
                             <TableCell align="center">
                                 <IconButton size="small" onClick={() => handleEdit(eq)}><EditIcon /></IconButton>
-                                <IconButton size="small" color="error" onClick={() => handleDelete(eq.id)}><DeleteIcon /></IconButton>
+                                <IconButton size="small" color="error" onClick={() => handleDeleteClick(equities.id)}><DeleteIcon /></IconButton>
                             </TableCell>
                         </TableRow>
                     ))}
@@ -100,6 +111,13 @@ export default function EquityMaster() {
                     <Button onClick={handleSave} variant="contained">{editId ? 'Update' : 'Simpan'}</Button>
                 </DialogActions>
             </Dialog>
+            <DeleteDialog
+                open={deleteDialogOpen}
+                onClose={() => setDeleteDialogOpen(false)}
+                onConfirm={handleDeleteConfirm}
+                title="Hapus Ekuitas"
+                message="Apakah kamu yakin ingin menghapus Ekuitas ini?"
+            />            
         </Box>
     );
 }

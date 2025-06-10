@@ -1,4 +1,5 @@
-import { TextField, Button, MenuItem, InputLabel, Select, FormControl, Typography } from '@mui/material';
+import { TextField, Button, MenuItem, InputLabel, Select, FormControl, Box } from '@mui/material';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
 
 export default function DocumentUploadForm({ title, setTitle, file, setFile, status, setStatus, handleUpload }) {
     return (
@@ -23,11 +24,16 @@ export default function DocumentUploadForm({ title, setTitle, file, setFile, sta
             </Select>
         </FormControl>
 
-        <input type="file" onChange={(e) => setFile(e.target.files[0])} />
-        
-        <Button variant="contained" onClick={handleUpload} sx={{ mt: 2 }}>
-            UPLOAD
-        </Button>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 2 }}>
+            <input
+                type="file"
+                onChange={(e) => setFile(e.target.files[0])}
+                style={{ marginRight: 12 }}
+            />
+            <Button variant="contained" onClick={handleUpload} sx={{ minWidth: 110, fontWeight: 700 }} startIcon={<UploadFileIcon />}>
+                UPLOAD
+            </Button>
+        </Box>
         </>
     );
 }

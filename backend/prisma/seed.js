@@ -35,7 +35,7 @@ async function main() {
 
         const nIncome = Math.floor(nTrans * 0.5) + randomInRange(-3, 3);
         for (let i = 0; i < nIncome; i++) {
-            const amount = randomInRange(150000, 400000);
+            const amount = randomInRange(100000, 750000);
             monthIncome += amount;
             saldo += amount;
             await prisma.transaction.create({
@@ -53,7 +53,7 @@ async function main() {
 
         const nExpense = nTrans - nIncome;
         for (let i = 0; i < nExpense; i++) {
-            const amount = randomInRange(100000, 350000);
+            const amount = randomInRange(100000, 600000);
             monthExpense += amount;
             saldo -= amount;
             await prisma.transaction.create({
@@ -71,7 +71,7 @@ async function main() {
         }
 
         for (let i = 0; i < randomInRange(1, 2); i++) {
-            const amount = randomInRange(100000, 300000);
+            const amount = randomInRange(100000, 600000);
             saldo += amount;
             await prisma.transaction.create({
                 data: {

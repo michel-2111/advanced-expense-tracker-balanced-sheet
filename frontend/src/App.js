@@ -1,7 +1,8 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
-import { AuthProvider } from './context/AuthContext';
 import { ToastContainer } from 'react-toastify';
+import { AuthProvider } from './context/AuthContext';
+import { BreadcrumbProvider } from './context/BreadcrumbContext';
 
 import Login from './pages/login'
 import UMKMFinance from './pages/UMKMFinance'
@@ -11,7 +12,7 @@ import BalanceSheet from './pages/BalanceSheet';
 import UMKMDashboard from './pages/UMKMDashboard';
 import MasterData from './pages/MasterData';
 import Listpage from "./pages/TransactionListPage"
-import { BreadcrumbProvider } from './context/BreadcrumbContext';
+import UserManagerPage from './pages/UserManagerPage';
 
 import 'react-toastify/dist/ReactToastify.css';
 import { useLocation } from 'react-router-dom';
@@ -29,6 +30,7 @@ function RoutesWrapper() {
         <Route path="/admin" element={<AdminArchive />} />
         <Route path="/balance-sheet" element={<BalanceSheet />} />
         <Route path='/list' element={<Listpage />} />
+        <Route path='/users' element={<UserManagerPage />} />
       </Routes>
     </AnimatePresence>
   );

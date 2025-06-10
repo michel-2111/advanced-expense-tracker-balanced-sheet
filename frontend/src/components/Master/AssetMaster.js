@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Table, TableHead, TableRow, TableCell, TableBody, Button, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Typography, Box, IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteDialog from './DeleteDialog';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
@@ -16,6 +17,9 @@ export default function AssetMaster() {
             .then(res => setAssets(res.data))
             .catch(() => toast.error('Gagal memuat data aset!'));
     };
+
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [selectedDeleteId, setSelectedDeleteId] = useState(null);
 
     useEffect(() => { fetchAssets(); }, []);
 
@@ -48,15 +52,22 @@ export default function AssetMaster() {
         setOpen(true);
     };
 
-    const handleDelete = (id) => {
-        if (window.confirm('Hapus akun ini?')) {
-            axios.delete(`http://localhost:5000/api/assets/${id}`)
-                .then(() => {
-                    toast.success('Aset berhasil dihapus!');
-                    fetchAssets();
-                })
-                .catch(() => toast.error('Gagal menghapus aset!'));
-        }
+    const handleDeleteClick = (id) => {
+        setSelectedDeleteId(id);
+        setDeleteDialogOpen(true);
+    };
+
+    const handleDeleteConfirm = () => {
+        axios.delete(`http://localhost:5000/api/assets/${selectedDeleteId}`)
+            .then(() => {
+                toast.success('Aset berhasil dihapus!');
+                fetchAssets();
+            })
+            .catch(() => toast.error('Gagal menghapus aset!'))
+            .finally(() => {
+                setDeleteDialogOpen(false);
+                setSelectedDeleteId(null);
+            });
     };
 
     return (
@@ -79,7 +90,7 @@ export default function AssetMaster() {
                             <TableCell>{asset.notes}</TableCell>
                             <TableCell align="center">
                                 <IconButton size="small" onClick={() => handleEdit(asset)}><EditIcon /></IconButton>
-                                <IconButton size="small" color="error" onClick={() => handleDelete(asset.id)}><DeleteIcon /></IconButton>
+                                <IconButton size="small" color="error" onClick={() => handleDeleteClick(asset.id)}><DeleteIcon /></IconButton>
                             </TableCell>
                         </TableRow>
                     ))}
@@ -100,6 +111,13 @@ export default function AssetMaster() {
                     <Button onClick={handleSave} variant="contained">{editId ? 'Update' : 'Simpan'}</Button>
                 </DialogActions>
             </Dialog>
+            <DeleteDialog
+                open={deleteDialogOpen}
+                onClose={() => setDeleteDialogOpen(false)}
+                onConfirm={handleDeleteConfirm}
+                title="Hapus Aset"
+                message="Apakah kamu yakin ingin menghapus aset ini?"
+            />
         </Box>
     );
 }
